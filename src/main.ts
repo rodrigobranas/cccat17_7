@@ -1,9 +1,9 @@
-import { AccountRepositoryDatabase } from "./AccountRepository";
-import GetAccount from "./GetAccount";
-import Signup from "./Signup";
-import { PgPromiseAdapter } from "./DatabaseConnection";
-import { ExpressAdapter, HapiAdapter } from "./HttpServer";
-import AccountController from "./AccountController";
+import { AccountRepositoryDatabase } from "./infra/repository/AccountRepository";
+import GetAccount from "./application/usecase/account/GetAccount";
+import Signup from "./application/usecase/account/Signup";
+import { PgPromiseAdapter } from "./infra/database/DatabaseConnection";
+import { ExpressAdapter, HapiAdapter } from "./infra/http/HttpServer";
+import AccountController from "./infra/controller/AccountController";
 
 const connection = new PgPromiseAdapter();
 const accountRepository = new AccountRepositoryDatabase(connection);

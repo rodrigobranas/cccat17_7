@@ -3,7 +3,7 @@ services:
     image: postgres:14.3-alpine
     environment:
       POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: appp
+      POSTGRES_DB: app
     ports:
       - "5432:5432"
     volumes:

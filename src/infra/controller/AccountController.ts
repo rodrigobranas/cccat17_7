@@ -1,6 +1,6 @@
-import Signup from "./Signup";
-import GetAccount from "./GetAccount";
-import HttpServer from "./HttpServer";
+import Signup from "../../application/usecase/account/Signup";
+import GetAccount from "../../application/usecase/account/GetAccount";
+import HttpServer from "../http/HttpServer";
 
 export default class AccountController {
 

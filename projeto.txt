@@ -1,16 +1,16 @@
-UC3 - Solicitar corrida
+UC3 - RequestRide
 
 Ator: Passageiro
-Input: passenger_id (account_id), from (lat, long), to (lat, long)
-Output: ride_id
+Input: passenger_id (account_id), from (lat, long), to (lat, long) ok
+Output: ride_id ok
 
 Regras:
 
-* deve verificar se o account_id tem is_passenger true
-* deve verificar se já não existe uma corrida do passageiro em status diferente de "completed", se existir lançar um erro
-* deve gerar o ride_id (uuid)
-* deve definir o status como "requested"
-* deve definir date com a data atual
+* deve verificar se o account_id tem is_passenger true ok
+* deve verificar se já não existe uma corrida do passageiro em status diferente de "completed", se existir lançar um erro ok
+* deve gerar o ride_id (uuid) ok
+* deve definir o status como "requested" ok
+* deve definir date com a data atual ok
 
 UC4 - GetRide
 
@@ -32,3 +32,8 @@ create table cccat17.ride (
 	to_long numeric,
 	date timestamp
 );
+
+fromLat: -27.584905257808835,
+fromLong: -48.545022195325124,
+toLat: -27.496887588317275,
+toLong: -48.522234807851476

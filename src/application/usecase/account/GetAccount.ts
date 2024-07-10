@@ -1,5 +1,5 @@
-import UseCase from "./UseCase";
-import AccountRepository from "./AccountRepository";
+import AccountRepository from "../../repository/AccountRepository";
+import UseCase from "../UseCase";
 
 export default class GetAccount implements UseCase {
 	accountRepository: AccountRepository;
@@ -8,14 +8,14 @@ export default class GetAccount implements UseCase {
 		this.accountRepository = accountRepository;
 	}
 	
-	async execute (accountId: any): Promise<Output> {
+	async execute (accountId: string): Promise<Output> {
 		const account = await this.accountRepository.getAccountById(accountId);
 		return {
 			accountId: account.accountId,
-			name: account.name,
-			email: account.email,
+			name: account.getName(),
+			email: account.getEmail(),
 			cpf: account.getCpf(),
-			carPlate: account.carPlate,
+			carPlate: account.getCarPlate(),
 			isPassenger: account.isPassenger,
 			isDriver: account.isDriver
 		};

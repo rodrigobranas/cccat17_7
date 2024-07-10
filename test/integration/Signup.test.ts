@@ -1,19 +1,22 @@
-import GetAccount from "../src/GetAccount";
-import MailerGateway from "../src/MailerGateway";
-import Signup from "../src/Signup";
-import { AccountRepositoryDatabase, AccountRepositoryMemory } from "../src/AccountRepository";
+import MailerGateway from "../../src/application/gateway/MailerGateway";
+import GetAccount from "../../src/application/usecase/account/GetAccount";
+import Signup from "../../src/application/usecase/account/Signup";
+import Account from "../../src/domain/entity/Account";
+import DatabaseConnection, { PgPromiseAdapter } from "../../src/infra/database/DatabaseConnection";
+import MailerGatewayFake from "../../src/infra/gateway/MailerGatewayFake";
+import { AccountRepositoryDatabase, AccountRepositoryMemory } from "../../src/infra/repository/AccountRepository";
 import sinon from "sinon";
-import Account from "../src/Account";
-import DatabaseConnection, { PgPromiseAdapter } from "../src/DatabaseConnection";
 
 let connection: DatabaseConnection;
 let signup: Signup;
 let getAccount: GetAccount;
+let mailerGateway: MailerGateway;
 
 beforeEach(() => {
 	connection = new PgPromiseAdapter();
 	const accountRepository = new AccountRepositoryDatabase(connection);
-	signup = new Signup(accountRepository);
+	mailerGateway = new MailerGatewayFake();
+	signup = new Signup(accountRepository, mailerGateway);
 	getAccount = new GetAccount(accountRepository);
 });
 
@@ -106,7 +109,7 @@ test("Não deve criar uma conta de motorista com a placa inválida", async funct
 });
 
 test("Deve criar uma conta de passageiro com stub do MailerGateway", async function () {
-	const stub = sinon.stub(MailerGateway.prototype, "send").resolves();
+	const stub = sinon.stub(MailerGatewayFake.prototype, "send").resolves();
 	const inputSignup = {
 		name: "John Doe",
 		email: `john.doe${Math.random()}@gmail.com`,
@@ -164,7 +167,7 @@ test("Deve criar uma conta de passageiro com fake do AccountRepository", async f
 });
 
 test("Deve criar uma conta de passageiro com spy no MailerGateway", async function () {
-	const spySend = sinon.spy(MailerGateway.prototype, "send");
+	const spySend = sinon.spy(MailerGatewayFake.prototype, "send");
 	const inputSignup = {
 		name: "John Doe",
 		email: `john.doe${Math.random()}@gmail.com`,
@@ -189,7 +192,7 @@ test("Deve criar uma conta de passageiro com mock no MailerGateway", async funct
 		cpf: "97456321558",
 		isPassenger: true
 	}
-	const mockMailerGateway = sinon.mock(MailerGateway.prototype);
+	const mockMailerGateway = sinon.mock(MailerGatewayFake.prototype);
 	mockMailerGateway.expects("send").withArgs(inputSignup.email, "Welcome!", "").once().callsFake(() => {
 		console.log("abc");
 	});
