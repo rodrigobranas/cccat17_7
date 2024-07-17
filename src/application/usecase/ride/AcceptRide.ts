@@ -9,13 +9,12 @@ export default class AcceptRide implements UseCase {
 	}
 
 	async execute(input: Input): Promise<void> {
-		// application business rules
+		const hasActiveRide = await this.rideRepository.hasActiveRideByDriverId(input.driverId);
+		if (hasActiveRide) throw new Error("This driver has an active ride");
 		const account = await this.accountRepository.getAccountById(input.driverId);
-		if (!account.isDriver) throw new Error();
-		// enterprise business rules
 		const ride = await this.rideRepository.getRideById(input.rideId);
-		ride.accept(input.driverId);
-		await this.rideRepository.saveRide(ride);
+		ride.accept(account);
+		await this.rideRepository.updateRide(ride);
 	}
 
 }

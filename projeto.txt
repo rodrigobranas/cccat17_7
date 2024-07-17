@@ -1,39 +1,48 @@
-UC3 - RequestRide
+UC5 - AcceptRide OK
 
-Ator: Passageiro
-Input: passenger_id (account_id), from (lat, long), to (lat, long) ok
-Output: ride_id ok
+Ator: Motorista
+Input: ride_id, driver_id (account_id)
+Output: void
 
 Regras:
 
-* deve verificar se o account_id tem is_passenger true ok
-* deve verificar se já não existe uma corrida do passageiro em status diferente de "completed", se existir lançar um erro ok
-* deve gerar o ride_id (uuid) ok
-* deve definir o status como "requested" ok
-* deve definir date com a data atual ok
+deve verificar se o account_id tem is_driver true
+deve verificar se o status da corrida é "requested", se não for, lançar um erro
+deve verificar se o motorista já tem outra corrida com status "accepted" ou "in_progress", se tiver lançar um erro
+deve associar o driver_id na corrida
+deve mudar o status para "accepted"
 
-UC4 - GetRide
 
+UC6 - StartRide OK
+
+Ator: Motorista
 Input: ride_id
-Output: todos as informações da ride juntamente com os dados do passageiro e do motorista (inicialmente null, definido após o use case de AcceptRide)
+Output: void
+
+Regras:
+
+
+Deve verificar se a corrida está em status "accepted", se não estiver lançar um erro
+Deve modificar o status da corrida para "in_progress"
+
+UC7 - UpdatePosition OK
+Ator: Sistema
+Input: ride_id, lat, long
+Output: void
+
+Deve verificar se a corrida está em status "in_progress", se não estiver lançar um erro
+Deve gerar o position_id
+Deve salvar na tabela position: position_id, ride_id, lat, long e date
+Calcular distancia acumulada
+Calcular a tarifa acumulada
+
 
 Considere o modelo de dados:
 
-create table cccat17.ride (
-	ride_id uuid,
-	passenger_id uuid,
-	driver_id uuid,
-	status text,
-	fare numeric,
-	distance numeric,
-	from_lat numeric,
-	from_long numeric,
-	to_lat numeric,
-	to_long numeric,
-	date timestamp
+create table cccat17.position (
+position_id uuid,
+ride_id uuid,
+lat numeric,
+long numeric,
+date timestamp
 );
-
-fromLat: -27.584905257808835,
-fromLong: -48.545022195325124,
-toLat: -27.496887588317275,
-toLong: -48.522234807851476

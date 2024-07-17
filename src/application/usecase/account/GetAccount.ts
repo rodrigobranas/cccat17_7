@@ -17,7 +17,8 @@ export default class GetAccount implements UseCase {
 			cpf: account.getCpf(),
 			carPlate: account.getCarPlate(),
 			isPassenger: account.isPassenger,
-			isDriver: account.isDriver
+			isDriver: account.isDriver,
+			password: account.getPassword()
 		};
 	}
 }
@@ -29,5 +30,6 @@ type Output = {
 	cpf: string,
 	carPlate: string,
 	isPassenger: boolean,
-	isDriver: boolean
+	isDriver: boolean,
+	password: string
 }

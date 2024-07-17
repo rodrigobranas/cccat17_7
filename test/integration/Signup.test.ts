@@ -25,7 +25,8 @@ test("Deve criar uma conta de passageiro", async function () {
 		name: "John Doe",
 		email: `john.doe${Math.random()}@gmail.com`,
 		cpf: "97456321558",
-		isPassenger: true
+		isPassenger: true,
+		password: "123456"
 	}
 	const outputSignup = await signup.execute(inputSignup);
 	expect(outputSignup.accountId).toBeDefined();
@@ -33,6 +34,7 @@ test("Deve criar uma conta de passageiro", async function () {
 	expect(outputGetAccount.name).toBe(inputSignup.name);
 	expect(outputGetAccount.email).toBe(inputSignup.email);
 	expect(outputGetAccount.cpf).toBe(inputSignup.cpf);
+	expect(outputGetAccount.password).toBe(inputSignup.password);
 });
 
 test("Deve criar uma conta de motorista", async function () {
