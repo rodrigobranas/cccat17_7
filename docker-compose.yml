@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres_account:
     image: postgres:14.3-alpine
     environment:
       POSTGRES_PASSWORD: 123456
@@ -7,4 +7,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./create.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/account/create.sql:/docker-entrypoint-initdb.d/init.sql
+  postgres_ride:
+    image: postgres:14.3-alpine
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: app
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./backend/ride/create.sql:/docker-entrypoint-initdb.d/init.sql
+  # rabbitmq:
+  #   image: rabbitmq:3-management-alpine
+  #   ports:
+  #     - 5672:5672
+  #     - 15672:15672
+  #   volumes:
+  #     - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+  #     - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
