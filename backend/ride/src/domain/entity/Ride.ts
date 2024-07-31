@@ -3,13 +3,16 @@ import Coord from "../vo/Coord";
 import Position from "./Position";
 import Segment from "../vo/Segment";
 import FareCalculator, { FareCalculatorFactory } from "../service/FareCalculator";
+import RideCompletedEvent from "../event/RideCompletedEvent";
+import Observer from "../../infra/mediator/Observer";
 
 // Entity, forma um Aggregate liderado por Ride (root) que contém Coord 
-export default class Ride {
+export default class Ride extends Observer {
 	private from: Coord;
 	private to: Coord;
 
 	constructor (readonly rideId: string, readonly passengerId: string, public driverId: string, fromLat: number, fromLong: number, toLat: number, toLong: number, public status: string, readonly date: Date, public distance: number, public fare: number) {
+		super();
 		this.from = new Coord(fromLat, fromLong);
 		this.to = new Coord(toLat, toLong);
 	}
@@ -55,5 +58,7 @@ export default class Ride {
 	finish () {
 		if (this.status !== "in_progress") throw new Error("Invalid status");
 		this.status = "completed";
+		const event = new RideCompletedEvent(this.rideId, this.fare);
+		this.notify("rideCompleted", event);
 	}
 }

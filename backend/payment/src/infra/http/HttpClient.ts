@@ -10,11 +10,6 @@ export default interface HttpClient {
 }
 
 // S
-
-axios.defaults.validateStatus = function () {
-	return true;
-}
-
 export class AxiosAdapter implements HttpClient {
 
 	async get(url: string): Promise<any> {

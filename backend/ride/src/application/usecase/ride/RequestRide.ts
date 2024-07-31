@@ -10,8 +10,12 @@ export default class RequestRide implements UseCase {
 
 	async execute(input: Input): Promise<Output> {
 		// application business rules
-		const account = await this.accountGateway.getAccountById(input.passengerId);
-		if (!account.isPassenger) throw new Error("This account is not from passenger");
+		try {
+			const account = await this.accountGateway.getAccountById(input.passengerId);
+			if (!account.isPassenger) throw new Error("This account is not from passenger");
+		} catch (e: any) {
+			throw new Error("AccountGateway is unavailable");
+		}
 		const hasActiveRide = await this.rideRepository.hasActiveRideByPassengerId(input.passengerId);
 		if (hasActiveRide) throw new Error("This passenger has an active ride");
 		//

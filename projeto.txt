@@ -1,48 +1,27 @@
-UC5 - AcceptRide OK
+UC7 - ProcessPayment
 
-Ator: Motorista
-Input: ride_id, driver_id (account_id)
-Output: void
-
-Regras:
-
-deve verificar se o account_id tem is_driver true
-deve verificar se o status da corrida é "requested", se não for, lançar um erro
-deve verificar se o motorista já tem outra corrida com status "accepted" ou "in_progress", se tiver lançar um erro
-deve associar o driver_id na corrida
-deve mudar o status para "accepted"
-
-
-UC6 - StartRide OK
-
-Ator: Motorista
-Input: ride_id
-Output: void
-
-Regras:
-
-
-Deve verificar se a corrida está em status "accepted", se não estiver lançar um erro
-Deve modificar o status da corrida para "in_progress"
-
-UC7 - UpdatePosition OK
 Ator: Sistema
-Input: ride_id, lat, long
+Input: rideId, amount
 Output: void
 
-Deve verificar se a corrida está em status "in_progress", se não estiver lançar um erro
-Deve gerar o position_id
-Deve salvar na tabela position: position_id, ride_id, lat, long e date
-Calcular distancia acumulada
-Calcular a tarifa acumulada
+Deve simular o comportamento de um gateway de pagamento, sendo chamado a partir do use case FinishRide e fazendo o processamento do pagamento com base no cartão de crédito do passageiro
+O status deve ser sempre success
+Deve persistir na tabela transaction
 
 
 Considere o modelo de dados:
 
-create table cccat17.position (
-position_id uuid,
+create table cccat17.transaction (
+transaction_id uuid primary key,
 ride_id uuid,
-lat numeric,
-long numeric,
-date timestamp
+tid text,
+amount numeric,
+date timestamp,
+status text
 );
+
+
+
+Considere separar 3 microservices: account, ride e payment e faça a integração entre eles utilizando o protocolo HTTP
+Chegou a hora de aplicar a modelagem estratégica e separar o domínio em 3 bounded contexts diferentes: Ride, Account e Payment.
+Copie o projeto em backend/ride em backend/ride, backend/account e backend/payment, fazendo com que a relação entre eles aconteça por meio de requisições HTTP.

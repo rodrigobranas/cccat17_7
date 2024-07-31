@@ -1,4 +1,6 @@
 import AccountGateway from "../../src/application/gateway/AccountGateway";
+import GenerateInvoice from "../../src/application/usecase/invoice/GenerateInvoice";
+import ProcessPayment from "../../src/application/usecase/payment/ProcessPayment";
 import AcceptRide from "../../src/application/usecase/ride/AcceptRide";
 import FinishRide from "../../src/application/usecase/ride/FinishRide";
 import GetRide from "../../src/application/usecase/ride/GetRide";
@@ -7,6 +9,10 @@ import StartRide from "../../src/application/usecase/ride/StartRide";
 import UpdatePosition from "../../src/application/usecase/ride/UpdatePosition";
 import DatabaseConnection, { PgPromiseAdapter } from "../../src/infra/database/DatabaseConnection";
 import AccountGatewayHttp from "../../src/infra/gateway/AccountGatewayHttp";
+import PaymentGatewayHttp from "../../src/infra/gateway/PaymentGatewayHttp";
+import { AxiosAdapter } from "../../src/infra/http/HttpClient";
+import Mediator from "../../src/infra/mediator/Mediator";
+import Queue, { RabbitMQAdapter } from "../../src/infra/queue/Queue";
 import PositionRepositoryDatabase from "../../src/infra/repository/PositionRepositoryDatabase";
 import RideRepositoryDatabase from "../../src/infra/repository/RideRepositoryDatabase";
 
@@ -18,18 +24,30 @@ let startRide: StartRide;
 let updatePosition: UpdatePosition;
 let accountGateway: AccountGateway;
 let finishRide: FinishRide;
+let queue: Queue;
 
-beforeEach(() => {
+beforeEach(async () => {
 	connection = new PgPromiseAdapter();
 	const rideRepository = new RideRepositoryDatabase(connection);
 	const positionRepository = new PositionRepositoryDatabase(connection);
-	accountGateway = new AccountGatewayHttp();
+	const httpClient = new AxiosAdapter();
+	accountGateway = new AccountGatewayHttp(httpClient);
 	requestRide = new RequestRide(rideRepository, accountGateway);
 	getRide = new GetRide(rideRepository, accountGateway, positionRepository);
 	acceptRide = new AcceptRide(rideRepository, accountGateway);
 	startRide = new StartRide(rideRepository);
 	updatePosition = new UpdatePosition(rideRepository, positionRepository);
-	finishRide = new FinishRide(rideRepository);
+	const processPayment = new ProcessPayment();
+	const generateInvoice = new GenerateInvoice();
+	const mediator = new Mediator();
+	// mediator.register("rideCompleted", async function (data: any) {
+	// 	await processPayment.execute(data);
+	// 	await generateInvoice.execute(data);
+	// });
+	const paymentGateway = new PaymentGatewayHttp(httpClient);
+	queue = new RabbitMQAdapter();
+	await queue.connect();
+	finishRide = new FinishRide(rideRepository, mediator, paymentGateway, queue);
 });
 
 test("Deve finalizar uma corrida", async function () {
@@ -89,4 +107,7 @@ test("Deve finalizar uma corrida", async function () {
 
 afterEach(async () => {
 	await connection.close();
+	setTimeout(async () => {
+		await queue.disconnect();
+	}, 500);
 });
