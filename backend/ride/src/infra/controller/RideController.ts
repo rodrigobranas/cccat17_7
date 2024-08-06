@@ -10,12 +10,5 @@ export default class RideController {
 			console.log(response);
 			return response;
 		});
-		// volume muito grande de requisições, que tenham muitas dependências para outros microservices...
-		// + escalabilidade, resiliência, independência
-		// command/handler
-		httpServer.register("post", "/request_ride_async", async (params: any, body: any) => {
-			// command - intenção de executar
-			await queue.publish("requestRide", body);
-		});
 	}
 }

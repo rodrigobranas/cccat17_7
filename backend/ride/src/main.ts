@@ -7,7 +7,6 @@ import RideRepositoryDatabase from "./infra/repository/RideRepositoryDatabase";
 import { AxiosAdapter } from "./infra/http/HttpClient";
 import AccountGatewayHttp from "./infra/gateway/AccountGatewayHttp";
 import { RabbitMQAdapter } from "./infra/queue/Queue";
-import QueueController from "./infra/controller/QueueController";
 
 (async () => {
 	const connection = new PgPromiseAdapter();
@@ -19,7 +18,7 @@ import QueueController from "./infra/controller/QueueController";
 	const requestRide = new RequestRide(rideRepository, accountGateway);
 	const queue = new RabbitMQAdapter();
 	await queue.connect();
+	await queue.setup("rideCompleted", "rideCompleted.processPayment");
 	new RideController(httpServer, requestRide, queue);
-	new QueueController(queue, requestRide);
 	httpServer.listen(3000);
 })();

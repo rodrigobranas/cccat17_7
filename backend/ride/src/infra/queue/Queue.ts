@@ -49,7 +49,6 @@ export class RabbitMQAdapter implements Queue {
 
 	async publish(exchange: string, data: any): Promise<void> {
 		const channel = await this.connection.createChannel();
-		await this.setup(exchange, exchange);
 		channel.publish(exchange, "", Buffer.from(JSON.stringify(data)));
 	}
 

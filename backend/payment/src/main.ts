@@ -14,6 +14,7 @@ import QueueController from "./infra/controller/QueueController";
 	new PaymentController(httpServer, processPayment);
 	const queue = new RabbitMQAdapter();
 	await queue.connect();
+	await queue.setup("rideCompleted", "rideCompleted.processPayment");
 	new QueueController(queue, processPayment);
 	httpServer.listen(3002);
 })();
