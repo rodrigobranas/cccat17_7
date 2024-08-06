@@ -34,16 +34,8 @@ export class RabbitMQAdapter implements Queue {
 		const channel = await this.connection.createChannel();
 		channel.consume(queue, async function (msg: any) {
 			const input = JSON.parse(msg.content.toString());
-			try {
-				await callback(input);
-				channel.ack(msg);
-			} catch (e: any) {
-				if (e.type === "no/go") {
-					channel.ack(msg);
-				} else {
-					console.log("could not process message, keeping in the queue");
-				}
-			}
+			await callback(input);
+			channel.ack(msg);
 		})
 	}
 
